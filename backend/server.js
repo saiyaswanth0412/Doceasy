@@ -36,18 +36,20 @@ const corsOptions = {
       'http://192.168.1.195:5175'
     ]
     
-    // Allow all *.vercel.app domains
-    const isVercelDomain = origin && /https:\/\/.*\.vercel\.app$/.test(origin)
+    // Allow all *.vercel.app domains with better regex
+    const isVercelDomain = origin && origin.includes('.vercel.app')
     
     if (!origin || allowedOrigins.includes(origin) || isVercelDomain) {
       callback(null, true)
     } else {
+      console.log('CORS blocked origin:', origin)
       callback(new Error('Not allowed by CORS'))
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'token'],
+  maxAge: 86400
 }
 
 app.use(cors(corsOptions))
