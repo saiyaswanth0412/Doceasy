@@ -36,7 +36,10 @@ const corsOptions = {
       'http://192.168.1.195:5175'
     ]
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow all *.vercel.app domains
+    const isVercelDomain = origin && /https:\/\/.*\.vercel\.app$/.test(origin)
+    
+    if (!origin || allowedOrigins.includes(origin) || isVercelDomain) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
