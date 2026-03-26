@@ -25,26 +25,28 @@ app.use(express.json())
 // CORS configuration for Vercel and local development
 const corsOptions = {
   origin: function (origin, callback) {
+    // Allow localhost for development
+    if (!origin || origin.includes('localhost') || origin.includes('192.168')) {
+      return callback(null, true)
+    }
+    
+    // Allow ANY https://xxx.vercel.app domain (production)
+    if (origin && origin.startsWith('https://') && origin.includes('.vercel.app')) {
+      return callback(null, true)
+    }
+    
+    // Specific allowed origins
     const allowedOrigins = [
       'https://appointy.vercel.app',
-      'https://appointy-admin.vercel.app',
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://192.168.1.195:5173',
-      'http://192.168.1.195:5174',
-      'http://192.168.1.195:5175'
+      'https://appointy-admin.vercel.app'
     ]
     
-    // Allow all *.vercel.app domains with better regex
-    const isVercelDomain = origin && origin.includes('.vercel.app')
-    
-    if (!origin || allowedOrigins.includes(origin) || isVercelDomain) {
-      callback(null, true)
-    } else {
-      console.log('CORS blocked origin:', origin)
-      callback(new Error('Not allowed by CORS'))
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true)
     }
+    
+    console.log('CORS blocked origin:', origin)
+    callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
