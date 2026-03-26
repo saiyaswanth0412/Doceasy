@@ -30,18 +30,22 @@ const corsOptions = {
       return callback(null, true)
     }
     
-    // Allow ANY https://xxx.vercel.app domain (production)
+    // Allow ANY https://xxx.vercel.app domain (production) - MOST IMPORTANT
     if (origin && origin.startsWith('https://') && origin.includes('.vercel.app')) {
       return callback(null, true)
     }
     
-    // Specific allowed origins
+    // Specific allowed origins as backup
     const allowedOrigins = [
-      'https://appointy.vercel.app',
-      'https://appointy-admin.vercel.app',
+      // Admin URLs
       'https://admin-4vv60c950-yaswanth0412s-projects.vercel.app',
+      'https://admin-nine-plum-96.vercel.app',
+      // Frontend URLs
       'https://frontend-psi-eight-32.vercel.app',
-      'https://frontend-1atlms8d4-yaswanth0412s-projects.vercel.app'
+      'https://frontend-1atlms8d4-yaswanth0412s-projects.vercel.app',
+      // Other possible aliases
+      'https://appointy.vercel.app',
+      'https://appointy-admin.vercel.app'
     ]
     
     if (allowedOrigins.includes(origin)) {
