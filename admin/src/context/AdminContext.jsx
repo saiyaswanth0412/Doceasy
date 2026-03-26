@@ -8,7 +8,9 @@ export const AdminContext = createContext()
 const AdminContextProvider = (props) => {
 
     const [aToken, setAToken] = useState(localStorage.getItem('aToken') ? localStorage.getItem('aToken') : '')
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
+    // Use production URL if env var not set and we're in production
+    const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || (isProduction ? 'https://doceasy-production.up.railway.app' : 'http://localhost:4000')
     const [appointments, setAppointments] = useState([])
 
     const [doctors, setDoctors] = useState([])

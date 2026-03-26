@@ -6,7 +6,9 @@ export const AppContext = createContext()
 
 const AppContextProvider = (props) => {
     const currencySymbol = '₹'
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
+    // Use production URL if env var not set and we're in production
+    const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || (isProduction ? 'https://doceasy-production.up.railway.app' : 'http://localhost:4000')
 
     const [doctors, setDoctors] = useState([])
     const [token, setToken] = useState(localStorage.getItem('token') || '')
