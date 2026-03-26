@@ -38,7 +38,10 @@ const corsOptions = {
     // Specific allowed origins
     const allowedOrigins = [
       'https://appointy.vercel.app',
-      'https://appointy-admin.vercel.app'
+      'https://appointy-admin.vercel.app',
+      'https://admin-4vv60c950-yaswanth0412s-projects.vercel.app',
+      'https://frontend-psi-eight-32.vercel.app',
+      'https://frontend-1atlms8d4-yaswanth0412s-projects.vercel.app'
     ]
     
     if (allowedOrigins.includes(origin)) {
