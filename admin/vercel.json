@@ -2,9 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "env": {
-    "VITE_BACKEND_URL": "https://doceasy-production.up.railway.app"
-  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/" }
   ]
