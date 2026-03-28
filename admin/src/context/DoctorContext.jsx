@@ -157,6 +157,29 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const addVirtualConsultPrescription = async (consultId, medicines, notes) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + '/api/doctor/add-virtual-consult-prescription',
+        { consultId, medicines, notes },
+        authHeader
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getVirtualConsults();
+        return true;
+      } else {
+        toast.error(data.message);
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message);
+      return false;
+    }
+  };
+
   const value = {
     dToken,
     setDToken,
@@ -175,6 +198,7 @@ const DoctorContextProvider = (props) => {
     getVirtualConsults,
     virtualConsults,
     sendVirtualConsultReply,
+    addVirtualConsultPrescription,
   };
 
   return (
