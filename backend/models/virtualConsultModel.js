@@ -22,6 +22,19 @@ const virtualConsultSchema = new mongoose.Schema(
     status: { type: String, enum: ['pending', 'replied'], default: 'pending' },
     doctorReply: { type: String, default: '' },
     repliedAt: { type: Number, default: null },
+    prescription: {
+      medicines: [
+        {
+          name: String,
+          dosage: String,
+          frequency: String,
+          duration: String,
+          instructions: { type: String, default: '' }
+        }
+      ],
+      notes: { type: String, default: '' },
+      createdAt: Date
+    },
     createdAtTs: { type: Number, default: Date.now }
   },
   { minimize: false, timestamps: true }

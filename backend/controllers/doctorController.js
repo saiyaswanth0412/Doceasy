@@ -252,6 +252,41 @@ const addPrescription = async (req, res) => {
   }
 };
 
+// Add prescription to virtual consultation
+const addVirtualConsultPrescription = async (req, res) => {
+  try {
+    const docId = req.user.id;
+    const { consultId, medicines, notes } = req.body;
+
+    if (!consultId || !medicines || medicines.length === 0) {
+      return res.status(400).json({ success: false, message: 'Missing consult ID or medicines' });
+    }
+
+    const consult = await virtualConsultModel.findById(consultId);
+    if (!consult || consult.assignedDoctorId !== docId) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to add prescription' });
+    }
+
+    const prescriptionData = {
+      medicines: medicines.map(med => ({
+        name: med.name,
+        dosage: med.dosage,
+        frequency: med.frequency,
+        duration: med.duration,
+        instructions: med.instructions || ''
+      })),
+      notes: notes || '',
+      createdAt: new Date()
+    };
+
+    await virtualConsultModel.findByIdAndUpdate(consultId, { prescription: prescriptionData });
+    res.json({ success: true, message: 'Prescription added successfully to virtual consultation' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   loginDoctor,
   appointmentsDoctor,
@@ -265,4 +300,5 @@ export {
   doctorVirtualConsults,
   replyVirtualConsult,
   addPrescription,
+  addVirtualConsultPrescription,
 };
