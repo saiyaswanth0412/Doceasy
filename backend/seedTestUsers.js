@@ -11,12 +11,12 @@ const seedTestUsers = async () => {
     console.log('📦 MongoDB Connected');
 
     // ===== ADMIN USER =====
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    const adminPassword = await bcrypt.hash('your_admin_password', 10);
     const admin = await adminModel.findOneAndUpdate(
-      { email: 'admin@appointy.com' },
+      { email: 'admin@example.com' },
       {
         name: 'Admin User',
-        email: 'admin@appointy.com',
+        email: 'admin@example.com',
         password: adminPassword,
         date: Date.now()
       },
@@ -126,8 +126,8 @@ const seedTestUsers = async () => {
     console.log('🎉 TEST USERS CREATED SUCCESSFULLY!\n');
     
     console.log('📋 ADMIN CREDENTIALS:');
-    console.log('   Email: admin@appointy.com');
-    console.log('   Password: admin123\n');
+    console.log('   Email: admin@example.com');
+    console.log('   Password: your_admin_password\n');
 
     console.log('👨‍⚕️ DOCTOR CREDENTIALS:');
     console.log('   Email: doctor1@appointy.com');

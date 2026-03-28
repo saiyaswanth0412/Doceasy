@@ -180,6 +180,36 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const getConsultSummary = async (consultId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + '/api/doctor/get-consult-summary',
+        { consultId },
+        authHeader
+      );
+
+      if (data.success) {
+        return {
+          success: true,
+          summary: data.summary,
+        };
+      } else {
+        toast.error(data.message);
+        return {
+          success: false,
+          error: data.message,
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to generate summary');
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  };
+
   const value = {
     dToken,
     setDToken,
@@ -199,6 +229,7 @@ const DoctorContextProvider = (props) => {
     virtualConsults,
     sendVirtualConsultReply,
     addVirtualConsultPrescription,
+    getConsultSummary,
   };
 
   return (

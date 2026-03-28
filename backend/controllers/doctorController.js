@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import virtualConsultModel from "../models/virtualConsultModel.js";
+import { summarizePatientHealth } from "../services/aiSummarizer.js";
 
 // Doctor login
 const loginDoctor = async (req, res) => {
@@ -287,6 +288,41 @@ const addVirtualConsultPrescription = async (req, res) => {
   }
 };
 
+// Get AI health summary for virtual consultation
+const getVirtualConsultSummary = async (req, res) => {
+  try {
+    const docId = req.user.id;
+    const { consultId } = req.body;
+
+    if (!consultId) {
+      return res.status(400).json({ success: false, message: 'Missing consult ID' });
+    }
+
+    const consult = await virtualConsultModel.findById(consultId);
+    if (!consult || consult.assignedDoctorId !== docId) {
+      return res.status(403).json({ success: false, message: 'Unauthorized access to consultation' });
+    }
+
+    // Call AI summarizer
+    const summaryResult = await summarizePatientHealth(consult);
+
+    if (summaryResult.success) {
+      res.json({
+        success: true,
+        summary: summaryResult.summary,
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Failed to generate summary: ' + summaryResult.error,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   loginDoctor,
   appointmentsDoctor,
@@ -301,4 +337,5 @@ export {
   replyVirtualConsult,
   addPrescription,
   addVirtualConsultPrescription,
+  getVirtualConsultSummary,
 };

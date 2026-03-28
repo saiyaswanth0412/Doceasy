@@ -3,12 +3,14 @@ import { DoctorContext } from '../../context/DoctorContext'
 import styles from '../../styles/RapidoDark.module.css'
 
 const DoctorVirtualConsults = () => {
-  const { dToken, virtualConsults, getVirtualConsults, sendVirtualConsultReply, addVirtualConsultPrescription } = useContext(DoctorContext)
+  const { dToken, virtualConsults, getVirtualConsults, sendVirtualConsultReply, addVirtualConsultPrescription, getConsultSummary } = useContext(DoctorContext)
   const [replyDrafts, setReplyDrafts] = useState({})
   const [prescriptionModal, setPrescriptionModal] = useState(false)
   const [selectedConsultId, setSelectedConsultId] = useState(null)
   const [medicines, setMedicines] = useState([])
   const [prescriptionNotes, setPrescriptionNotes] = useState('')
+  const [summaries, setSummaries] = useState({})
+  const [loadingId, setLoadingId] = useState(null)
 
   useEffect(() => {
     if (dToken) {
@@ -20,6 +22,15 @@ const DoctorVirtualConsults = () => {
     const message = (replyDrafts[consultId] || '').trim()
     if (!message) return
     sendVirtualConsultReply(consultId, message)
+  }
+
+  const generateSummary = async (consultId) => {
+    setLoadingId(consultId)
+    const result = await getConsultSummary(consultId)
+    if (result.success) {
+      setSummaries((prev) => ({ ...prev, [consultId]: result.summary }))
+    }
+    setLoadingId(null)
   }
 
   const openPrescriptionModal = (consultId) => {
@@ -94,6 +105,15 @@ const DoctorVirtualConsults = () => {
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '16px' }}><span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>Current Medications:</span> {item.currentMedications}</p>
               )}
 
+              {/* AI Health Summary */}
+              {summaries[item._id] && (
+                <div style={{ backgroundColor: 'rgba(168, 85, 247, 0.1)', borderRadius: '8px', padding: '16px', border: '1px solid var(--border)', marginBottom: '16px' }}>
+                  <p style={{ fontWeight: '600', color: '#a855f7', marginBottom: '8px' }}>🤖 AI Health Summary</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', whiteSpace: 'pre-wrap' }}>{summaries[item._id]}</p>
+                </div>
+              )}
+
+              {/* Prescription */}
               {item.prescription && (
                 <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: '8px', padding: '16px', border: '1px solid var(--border)', marginBottom: '16px' }}>
                   <p style={{ fontWeight: '600', color: 'var(--accent)', marginBottom: '8px' }}>Prescription Given</p>
@@ -108,6 +128,7 @@ const DoctorVirtualConsults = () => {
                 </div>
               )}
 
+              {/* Doctor Reply */}
               {item.status === 'replied' ? (
                 <div style={{ backgroundColor: 'rgba(6, 182, 212, 0.1)', borderRadius: '8px', padding: '16px', border: '1px solid var(--border)', marginBottom: '16px' }}>
                   <p style={{ fontWeight: '600', color: 'var(--accent)', marginBottom: '8px' }}>Your Reply</p>
@@ -131,20 +152,34 @@ const DoctorVirtualConsults = () => {
                 </div>
               )}
 
-              {!item.prescription && (
-                <button
-                  onClick={() => openPrescriptionModal(item._id)}
-                  className={styles.primaryBtn}
-                  style={{ marginTop: '12px', backgroundColor: 'rgba(34, 197, 94, 0.9)' }}
-                >
-                  Add Prescription
-                </button>
-              )}
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', flexWrap: 'wrap' }}>
+                {!summaries[item._id] && (
+                  <button
+                    onClick={() => generateSummary(item._id)}
+                    disabled={loadingId === item._id}
+                    className={styles.primaryBtn}
+                    style={{ backgroundColor: 'rgba(168, 85, 247, 0.9)' }}
+                  >
+                    {loadingId === item._id ? '⏳ Generating...' : '🤖 Generate AI Summary'}
+                  </button>
+                )}
+                {!item.prescription && (
+                  <button
+                    onClick={() => openPrescriptionModal(item._id)}
+                    className={styles.primaryBtn}
+                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.9)' }}
+                  >
+                    Add Prescription
+                  </button>
+                )}
+              </div>
             </div>
           ))
         )}
       </div>
 
+      {/* Prescription Modal */}
       {prescriptionModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,

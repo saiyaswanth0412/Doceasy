@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginDoctor, appointmentsDoctor, appointmentCancel, doctorList,  appointmentComplete, doctorDashboard, doctorProfile, updateDoctorProfile, changeAvailability, doctorVirtualConsults, replyVirtualConsult, addPrescription, addVirtualConsultPrescription } from '../controllers/doctorController.js';
+import { loginDoctor, appointmentsDoctor, appointmentCancel, doctorList,  appointmentComplete, doctorDashboard, doctorProfile, updateDoctorProfile, changeAvailability, doctorVirtualConsults, replyVirtualConsult, addPrescription, addVirtualConsultPrescription, getVirtualConsultSummary } from '../controllers/doctorController.js';
 import authDoctor from '../middlewares/authDoctor.js';
 const doctorRouter = express.Router();
 
@@ -16,5 +16,6 @@ doctorRouter.get('/virtual-consults', authDoctor, doctorVirtualConsults)
 doctorRouter.post('/virtual-consult-reply', authDoctor, replyVirtualConsult)
 doctorRouter.post('/add-prescription', authDoctor, addPrescription)
 doctorRouter.post('/add-virtual-consult-prescription', authDoctor, addVirtualConsultPrescription)
+doctorRouter.post('/get-consult-summary', authDoctor, getVirtualConsultSummary)
 
 export default doctorRouter;
