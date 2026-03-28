@@ -1,6 +1,4 @@
-import fetch from 'node-fetch';
-
-const BASETEN_API_KEY = 'K00OULIq.j6MPwjz7yRv9cszvnwZ0AEF2kIIPPFGo';
+const BASETEN_API_KEY = process.env.BASETEN_API_KEY || 'K00OULIq.j6MPwjz7yRv9cszvnwZ0AEF2kIIPPFGo';
 const BASETEN_BASE_URL = 'https://inference.baseten.co/v1';
 const MODEL = 'deepseek-ai/DeepSeek-V3.1';
 
