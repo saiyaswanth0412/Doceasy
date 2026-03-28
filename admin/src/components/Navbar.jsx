@@ -48,7 +48,7 @@ const Navbar = () => {
       {/* Brand Logo */}
       <a href="/" className={styles.navBrand}>
         <span className={styles.navBrandIcon}>⚕️</span>
-        <span>Appointy</span>
+        <span>Doceasy</span>
       </a>
 
       {/* Navigation Menu */}
