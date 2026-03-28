@@ -21,14 +21,6 @@ const Navbar = () => {
   return (
     <div className='bg-gradient-to-r from-blue-600 to-blue-800 dark:from-slate-900 dark:to-slate-800 shadow-lg sticky top-0 z-50'>
       <div className='flex items-center justify-between px-4 sm:px-8 py-4'>
-        <div className="w-24 h-12 overflow-hidden cursor-pointer" onClick={() => navigate('/')}>
-          <img
-            src={assets.logo || '/fallback-logo.png'}
-            alt="Doceasy"
-            className="w-full h-full object-cover"
-          />
-        </div>
-
         <ul className='hidden md:flex items-center gap-8 font-semibold text-white'>
           <li>
             <NavLink to='/' className={({ isActive }) => isActive ? 'text-yellow-300 border-b-2 border-yellow-300 pb-1' : 'hover:text-yellow-300 transition'}>HOME</NavLink>
