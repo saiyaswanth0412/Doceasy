@@ -7,7 +7,7 @@ import doctorModel from './models/doctorModel.js'
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://yaswanth0412:kgPSbCSoqvrfJqY6@cluster0.n375v.mongodb.net/appointy')
+    await mongoose.connect(process.env.MONGODB_URI)
     console.log('✅ Connected to MongoDB Atlas')
   } catch (error) {
     console.error('❌ MongoDB connection error:', error)
