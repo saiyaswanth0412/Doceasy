@@ -81,11 +81,16 @@ const appointmentComplete = async (req, res) => {
 // Get all doctors (for frontend list)
 const doctorList = async (req, res) => {
   try {
-    const doctors = await doctorModel.find({}).select("-password -email");
-    res.json({ success: true, doctors });
+    const doctors = await doctorModel.find({}).select("-password -email").lean()
+    console.log(`[DEBUG] doctorList returning ${doctors.length} doctors`)
+    if (doctors.length > 0) {
+      console.log(`[DEBUG] First doctor has location: ${!!doctors[0].location}`)
+      console.log(`[DEBUG] First doctor fields:`, Object.keys(doctors[0]))
+    }
+    res.json({ success: true, doctors })
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error)
+    res.status(500).json({ success: false, message: error.message })
   }
 };
 
@@ -323,12 +328,32 @@ const getVirtualConsultSummary = async (req, res) => {
   }
 };
 
+// Find doctors near user location
+const nearbyDoctors = async (req, res) => {
+  try {
+    const { longitude, latitude, maxDistance = 10000 } = req.body;
+
+    if (!longitude || !latitude) {
+      return res.status(400).json({ success: false, message: "Location coordinates required" });
+    }
+
+    // Simple test - return all available doctors first
+    const doctors = await doctorModel.find({ available: true }).select('-password').limit(20);
+
+    res.json({ success: true, doctors, message: "DEBUG: Testing nearby endpoint" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export {
   loginDoctor,
   appointmentsDoctor,
   appointmentCancel,
   appointmentComplete,
   doctorList,
+  nearbyDoctors,
   changeAvailability,
   doctorProfile,
   updateDoctorProfile,

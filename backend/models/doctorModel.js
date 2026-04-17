@@ -13,8 +13,23 @@ const doctorSchema = new mongoose.Schema({
     fees: { type: Number, required: true },
     slots_booked: { type: Object, default: {} },
     address: { type: Object, required: true },
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [longitude, latitude]
+            default: [0, 0]
+        }
+    },
     date: { type: Number, required: true },
 }, { minimize: false })
 
 const doctorModel = mongoose.models.doctor || mongoose.model("doctor", doctorSchema);
+
+// Create geospatial index for location queries
+doctorSchema.index({ location: "2dsphere" });
+
 export default doctorModel;

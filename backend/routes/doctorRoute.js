@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginDoctor, appointmentsDoctor, appointmentCancel, doctorList,  appointmentComplete, doctorDashboard, doctorProfile, updateDoctorProfile, changeAvailability, doctorVirtualConsults, replyVirtualConsult, addPrescription, addVirtualConsultPrescription, getVirtualConsultSummary } from '../controllers/doctorController.js';
+import { loginDoctor, appointmentsDoctor, appointmentCancel, doctorList, nearbyDoctors, appointmentComplete, doctorDashboard, doctorProfile, updateDoctorProfile, changeAvailability, doctorVirtualConsults, replyVirtualConsult, addPrescription, addVirtualConsultPrescription, getVirtualConsultSummary } from '../controllers/doctorController.js';
 import authDoctor from '../middlewares/authDoctor.js';
 const doctorRouter = express.Router();
 
@@ -7,6 +7,7 @@ doctorRouter.post("/login", loginDoctor)
 doctorRouter.post("/cancel-appointment", authDoctor, appointmentCancel)
 doctorRouter.get("/appointments", authDoctor, appointmentsDoctor)
 doctorRouter.get("/list", doctorList)
+doctorRouter.post("/nearby", nearbyDoctors)
 doctorRouter.post("/change-availability", authDoctor, changeAvailability)
 doctorRouter.post("/complete-appointment", authDoctor, appointmentComplete)
 doctorRouter.get("/dashboard", authDoctor, doctorDashboard)

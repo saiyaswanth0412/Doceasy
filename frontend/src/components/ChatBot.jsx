@@ -134,7 +134,7 @@ function ChatBot() {
         const successMsg = {
           id: messages.length + 1,
           type: 'bot',
-          text: `✅ ${data.message}\n\nAppointment Details:\n- Doctor: ${data.appointmentDetails.doctor}\n- Specialization: ${data.appointmentDetails.specialization}\n- Date: ${data.appointmentDetails.date}\n- Time: ${data.appointmentDetails.time}\n- Fees: ₹${data.appointmentDetails.amount}`
+          text: `✅ ${data.message}\n\nAppointment Details:\n- Doctor: ${data.appointmentDetails.doctor}\n- Specialization: ${data.appointmentDetails.specialization}\n- Date: ${data.appointmentDetails.date}\n- Time: ${data.appointmentDetails.time}\n- Fees: $${data.appointmentDetails.amount}`
         }
         setMessages(prev => [...prev, successMsg])
       } else {

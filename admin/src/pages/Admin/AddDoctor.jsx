@@ -19,9 +19,28 @@ const AddDoctor = () => {
   const [degree, setDegree] = useState('')
   const [address1, setAddress1] = useState('')
   const [address2, setAddress2] = useState('')
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
 
   const { backendUrl } = useContext(AdminContext)
   const { aToken } = useContext(AdminContext)
+
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+          toast.success('Location captured successfully!')
+        },
+        (error) => {
+          toast.error('Failed to get location: ' + error.message)
+        }
+      )
+    } else {
+      toast.error('Geolocation is not supported by this browser')
+    }
+  }
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -42,6 +61,8 @@ const AddDoctor = () => {
       formData.append('speciality', speciality);
       formData.append('degree', degree);
       formData.append('address', JSON.stringify({ line1: address1, line2: address2 }));
+      formData.append('latitude', latitude || 0);
+      formData.append('longitude', longitude || 0);
 
       const response = await axios.post(`${backendUrl}/api/admin/add-doctor`, formData, {
         headers: { aToken }
@@ -58,6 +79,8 @@ const AddDoctor = () => {
                 setDegree('')
                 setAbout('')
                 setFees('')
+                setLatitude('')
+                setLongitude('')
             } else {
                 toast.error(data.message)
             }
@@ -149,6 +172,18 @@ const AddDoctor = () => {
               <label className={styles.formLabel}>Address</label>
               <input onChange={e => setAddress1(e.target.value)} value={address1} className={styles.formInput} type="text" placeholder='Address 1' required />
               <input onChange={e => setAddress2(e.target.value)} value={address2} className={styles.formInput} type="text" placeholder='Address 2' required />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Location (GPS Coordinates)</label>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <input onChange={e => setLatitude(e.target.value)} value={latitude} className={styles.formInput} type="number" placeholder='Latitude' step="0.0001" />
+                <input onChange={e => setLongitude(e.target.value)} value={longitude} className={styles.formInput} type="number" placeholder='Longitude' step="0.0001" />
+              </div>
+              <button type='button' onClick={getLocation} style={{ padding: '8px 16px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>
+                📍 Get Current Location
+              </button>
+              {latitude && longitude && <p style={{ color: '#4CAF50', marginTop: '8px', fontSize: '12px' }}>✓ Location set: ({latitude.toFixed(4)}, {longitude.toFixed(4)})</p>}
             </div>
 
           </div>

@@ -42,7 +42,7 @@ const loginAdmin = async (req, res) => {
 // API for adding Doctor
 const addDoctor = async (req, res) => {
   try {
-    const { name, email, password, speciality, degree, experience, about, fees, address } = req.body;
+    const { name, email, password, speciality, degree, experience, about, fees, address, longitude, latitude } = req.body;
     const imageFile = req.file;
 
     if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address) {
@@ -117,6 +117,10 @@ const addDoctor = async (req, res) => {
       about,
       fees,
       address: JSON.parse(address),
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(longitude) || 0, parseFloat(latitude) || 0]
+      },
       date: Date.now()
     };
 
