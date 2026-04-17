@@ -65,12 +65,45 @@ const addDoctor = async (req, res) => {
     // Upload image to Cloudinary if provided
     if (imageFile) {
       try {
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+        console.log('📸 File received:', {
+          filename: imageFile.filename,
+          path: imageFile.path,
+          size: imageFile.size
+        });
+        
+        console.log('📸 Uploading to Cloudinary...');
+        
+        // Use unsigned upload (requires upload preset configured in Cloudinary)
+        const cloudName = process.env.CLOUDINARY_NAME;
+        const uploadPreset = 'appointy_doctors'; // You need to create this in Cloudinary dashboard
+        
+        // For now, let's use direct upload with API credentials
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { 
+          resource_type: "auto",
+          folder: "appointy/doctors",
+          eager: [{ quality: "auto" }]
+        });
+        
         imageUrl = imageUpload.secure_url;
+        console.log('✅ Cloudinary upload successful:', imageUrl);
+        
+        // Delete temp file after upload
+        import('fs').then(fs => {
+          fs.default.unlink(imageFile.path, (err) => {
+            if (err) console.log('Could not delete temp file');
+            else console.log('✅ Temp file cleaned up');
+          });
+        });
       } catch (error) {
-        console.log('Image upload failed, using placeholder:', error.message);
-        // Continue with placeholder image if upload fails
+        console.error('❌ Cloudinary upload failed');
+        console.error('Error:', error.message);
+        if (error.error) {
+          console.error('Details:', error.error);
+        }
+        // Continue with placeholder - don't fail the entire request
       }
+    } else {
+      console.log('⚠️  No image file provided, using placeholder');
     }
 
     const doctorData = {

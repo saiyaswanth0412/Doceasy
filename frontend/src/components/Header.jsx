@@ -20,7 +20,7 @@ const Header = () => {
 
             <div className='relative flex flex-col md:flex-row items-center justify-between gap-8'>
                 {/* Left Content */}
-                <div className='md:w-1/2 flex flex-col justify-center gap-6'>
+                <div className='w-full flex flex-col justify-center gap-6'>
                     <div>
                         <p className='text-yellow-300 font-bold text-sm uppercase tracking-widest mb-2'>Welcome to Doceasy</p>
                         <h1 className='text-4xl md:text-5xl lg:text-6xl text-white font-bold leading-tight mb-4'>
@@ -65,14 +65,6 @@ const Header = () => {
                             <p className='text-yellow-300 font-bold text-2xl'>24/7</p>
                             <p className='text-blue-100 text-sm'>Support</p>
                         </div>
-                    </div>
-                </div>
-
-                {/* Right Image */}
-                <div className='md:w-1/2 relative'>
-                    <div className='relative'>
-                        <div className='absolute inset-0 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-2xl blur-2xl opacity-30'></div>
-                        <img className='w-full rounded-2xl shadow-2xl relative z-10 hover:scale-105 transition-transform duration-300' src={assets.header_img} alt="doctor" />
                     </div>
                 </div>
             </div>

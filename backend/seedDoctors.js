@@ -104,8 +104,14 @@ const seedDoctors = async () => {
       },
     ];
 
-    await doctorModel.insertMany(sampleDoctors);
-    console.log(`✅ ${sampleDoctors.length} sample doctors added successfully!`);
+    for (const doctorData of sampleDoctors) {
+      await doctorModel.findOneAndUpdate(
+        { email: doctorData.email },
+        doctorData,
+        { upsert: true, new: true }
+      );
+    }
+    console.log(`✅ ${sampleDoctors.length} sample doctors added/updated successfully!`);
     
     const doctors = await doctorModel.find({}).select('name email speciality');
     console.log('\nDoctor List:');

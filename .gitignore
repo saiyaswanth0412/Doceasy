@@ -21,6 +21,9 @@ build/
 out/
 coverage/
 
+# Temp uploads
+backend/uploads/
+
 # IDE and Editor
 .vscode/
 .idea/
