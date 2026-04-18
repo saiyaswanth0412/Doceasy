@@ -15,7 +15,6 @@ const Footer = () => {
           {/* Brand Section */}
           <div className='flex flex-col gap-4'>
             <div className='flex items-center gap-2'>
-              <img className='w-8 h-8' src={assets.logo} alt='Doceasy' />
               <h2 className='text-2xl font-bold text-white'>Doceasy</h2>
             </div>
             <p className='text-gray-400 leading-6 max-w-xs'>

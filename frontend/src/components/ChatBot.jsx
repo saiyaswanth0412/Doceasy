@@ -3,13 +3,13 @@ import { AppContext } from '../context/AppContext'
 import './ChatBot.css'
 
 function ChatBot() {
-  const { userToken, backendUrl } = useContext(AppContext)
+  const { userData } = useContext(AppContext)
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: 'bot',
-      text: 'Hello! 👋 I\'m Appointy, your medical appointment assistant. How can I help you today?'
+      text: 'Hello! 👋 I\'m Doceasy, your medical appointment assistant. How can I help you today?'
     }
   ])
   const [inputValue, setInputValue] = useState('')
@@ -45,20 +45,25 @@ function ChatBot() {
       text: inputValue
     }
     const messageToSend = inputValue;
-    setMessages(prev => [...prev, userMessage])
+    const currentMessages = [...messages, userMessage]
+    setMessages(currentMessages)
     setInputValue('')
     setIsLoading(true)
     setLastRequestTime(now)
 
+    // Build history from conversation (skip the initial greeting)
+    const history = currentMessages.slice(1).map(m => ({ type: m.type, text: m.text }))
+
     try {
       const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
-      const response = await fetch(`${backendURL}/api/chatbot/send-message`, {
+      const response = await fetch(`${backendURL}/api/chatbot/message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: messageToSend
+          message: messageToSend,
+          history
         })
       })
 
@@ -72,17 +77,22 @@ function ChatBot() {
         }
         setMessages(prev => [...prev, botMessage])
 
-        // If booking data is present, ask for email and process booking
+        // If booking data is present, book automatically if logged in
         if (data.bookingData) {
-          setPendingBooking(data.bookingData)
-          setShowEmailPrompt(true)
-          
-          const confirmMsg = {
-            id: messages.length + 3,
-            type: 'bot',
-            text: 'Great! To complete your booking, please provide your email address.'
+          if (userData && userData.email) {
+            // Auto-book with logged-in user's email
+            bookAppointment(data.bookingData, userData.email)
+          } else {
+            // Ask for email if not logged in
+            setPendingBooking(data.bookingData)
+            setShowEmailPrompt(true)
+            const confirmMsg = {
+              id: messages.length + 3,
+              type: 'bot',
+              text: 'To complete your booking, please provide your email address.'
+            }
+            setMessages(prev => [...prev, confirmMsg])
           }
-          setMessages(prev => [...prev, confirmMsg])
         }
       } else {
         const errorMessage = {
@@ -105,60 +115,55 @@ function ChatBot() {
     }
   }
 
-  const handleBookAppointment = async (e) => {
-    e.preventDefault()
-    if (!userEmail.trim() || !pendingBooking) return
-
+  const bookAppointment = async (booking, email) => {
     setIsLoading(true)
     try {
-      const bookingPayload = {
-        userEmail: userEmail.trim(),
-        doctorName: pendingBooking.doctorName,
-        specialization: pendingBooking.specialization,
-        slotDate: pendingBooking.slotDate,
-        slotTime: pendingBooking.slotTime
-      }
-
       const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
-      const response = await fetch(`${backendURL}/api/chatbooking/book-via-chatbot`, {
+      const response = await fetch(`${backendURL}/api/chatbot/bookings/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(bookingPayload)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: email,
+          doctorName: booking.doctorName,
+          specialization: booking.specialization,
+          slotDate: booking.slotDate,
+          slotTime: booking.slotTime
+        })
       })
 
       const data = await response.json()
 
       if (data.success) {
-        const successMsg = {
-          id: messages.length + 1,
+        setMessages(prev => [...prev, {
+          id: prev.length + 1,
           type: 'bot',
-          text: `✅ ${data.message}\n\nAppointment Details:\n- Doctor: ${data.appointmentDetails.doctor}\n- Specialization: ${data.appointmentDetails.specialization}\n- Date: ${data.appointmentDetails.date}\n- Time: ${data.appointmentDetails.time}\n- Fees: $${data.appointmentDetails.amount}`
-        }
-        setMessages(prev => [...prev, successMsg])
+          text: `✅ ${data.message}\n\nAppointment Details:\n- Doctor: ${data.appointmentDetails.doctor}\n- Specialization: ${data.appointmentDetails.specialization}\n- Date: ${data.appointmentDetails.date}\n- Time: ${data.appointmentDetails.time}\n- Fees: ₹${data.appointmentDetails.amount}`
+        }])
       } else {
-        const errorMsg = {
-          id: messages.length + 1,
+        setMessages(prev => [...prev, {
+          id: prev.length + 1,
           type: 'bot',
           text: `❌ Booking failed: ${data.message}`
-        }
-        setMessages(prev => [...prev, errorMsg])
+        }])
       }
     } catch (error) {
-      console.error('Error:', error)
-      const errorMsg = {
-        id: messages.length + 1,
+      setMessages(prev => [...prev, {
+        id: prev.length + 1,
         type: 'bot',
         text: 'Failed to book appointment. Please try again.'
-      }
-      setMessages(prev => [...prev, errorMsg])
+      }])
     } finally {
       setShowEmailPrompt(false)
       setPendingBooking(null)
       setUserEmail('')
       setIsLoading(false)
     }
+  }
+
+  const handleBookAppointment = async (e) => {
+    e.preventDefault()
+    if (!userEmail.trim() || !pendingBooking) return
+    bookAppointment(pendingBooking, userEmail.trim())
   }
 
   const handleKeyPress = (e) => {
@@ -174,7 +179,7 @@ function ChatBot() {
       <button
         className="chatbot-btn"
         onClick={() => setIsOpen(!isOpen)}
-        title="Chat with Appointy"
+        title="Chat with Doceasy"
       >
         {isOpen ? '✕' : '💬'}
       </button>
@@ -183,7 +188,7 @@ function ChatBot() {
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
-            <h3>Appointy</h3>
+            <h3>Doceasy</h3>
             <p className="chat-subtitle">Your appointment assistant</p>
           </div>
 

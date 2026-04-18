@@ -1,9 +1,8 @@
 import express from 'express';
 import { sendMessage } from '../controllers/chatbotController.js';
 
-const router = express.Router();
+const chatbotRouter = express.Router();
 
-// Route to send message to chatbot (public endpoint)
-router.post('/send-message', sendMessage);
+chatbotRouter.post('/message', sendMessage);
 
-export default router;
+export default chatbotRouter;
