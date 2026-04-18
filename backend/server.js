@@ -70,7 +70,7 @@ app.use("/api/user", userRouter)
 app.use("/api/chatbot", chatbotRouter)
 app.use("/api/prescription", prescriptionRouter)
 app.use("/api/gemini", geminiRouter)
-app.use("/api/chatbooking", chatbookingRouter)
+app.use("/api/chatbot/bookings", chatbookingRouter)
 
 
 app.get("/", (req, res) => {

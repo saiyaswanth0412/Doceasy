@@ -182,11 +182,14 @@ const DoctorContextProvider = (props) => {
 
   const getConsultSummary = async (consultId) => {
     try {
+      console.log('🔄 Fetching summary for consultId:', consultId);
       const { data } = await axios.post(
         backendUrl + '/api/doctor/get-consult-summary',
         { consultId },
         authHeader
       );
+
+      console.log('📊 Summary API Response:', data);
 
       if (data.success) {
         return {
@@ -194,6 +197,7 @@ const DoctorContextProvider = (props) => {
           summary: data.summary,
         };
       } else {
+        console.error('❌ Summary API returned error:', data.message);
         toast.error(data.message);
         return {
           success: false,
@@ -201,8 +205,8 @@ const DoctorContextProvider = (props) => {
         };
       }
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to generate summary');
+      console.error('❌ Error fetching summary:', error);
+      toast.error('Failed to generate summary: ' + (error.response?.data?.message || error.message));
       return {
         success: false,
         error: error.message,

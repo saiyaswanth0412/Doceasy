@@ -7,7 +7,7 @@ import appointmentModel from '../models/appointmentModel.js'
 const router = express.Router()
 
 // Endpoint for chatbot to book appointments
-router.post('/book-via-chatbot', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { userEmail, doctorName, specialization, slotDate, slotTime } = req.body
 
